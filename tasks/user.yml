@@ -1,0 +1,18 @@
+---
+
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/group_module.html
+- name: "Create {{ kc_name }} group"
+  ansible.builtin.group:
+    name: "{{ kc_name }}"
+    system: yes
+    state: present
+
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html
+- name: "Create {{ kc_name }} user"
+  ansible.builtin.user:
+    name: "{{ kc_name }}"
+    group: "{{ kc_name }}"
+    create_home: no
+    shell: /usr/sbin/nologin
+    system: yes
+    state: present

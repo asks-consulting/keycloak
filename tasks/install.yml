@@ -1,0 +1,40 @@
+---
+
+# install if not already installed, or if installed version is older
+# than the downloaded version
+- name: "Install Keycloak v{{ keycloak_version }}"
+  when: >
+    not (keycloak_binary.stat.exists | bool) or
+    (keycloak_binary.stat.exists | bool and keycloak_version is version(kc_installed_version, '>'))
+  block:
+
+    - name: "Download {{ kc_tgz_url }}"
+      ansible.builtin.get_url:
+        url: "{{ kc_tgz_url }}"
+        dest: "{{ ansible_env.HOME }}/.cache/{{ kc_filename }}.tar.gz"
+
+    # note: if keycloak dir already exists, unarchiving will not wipe existing files unless they clash
+    # making for a possible messy situation. Better to wipe the dir before unarchiving
+    - name: "Wipe the directory {{ keycloak.install_dir }}"
+      ansible.builtin.file:
+        path: "{{ keycloak.install_dir }}"
+        state: absent
+
+    # this way we make sure the dir is empty at this point
+    - name: "Make sure directory {{ keycloak.install_dir }} exists"
+      ansible.builtin.file:
+        path: "{{ keycloak.install_dir }}"
+        state: directory
+        owner: "{{ keycloak.user }}"
+        group: "{{ keycloak.user }}"
+
+    # after unarchiving, some subfolders are still owned by root. Weird...
+    - name: "Unarchive Keycloak v{{ keycloak_version }} tarball"
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: "{{ ansible_env.HOME }}/.cache/{{ kc_filename }}.tar.gz"
+        dest: "{{ keycloak.install_dir }}"
+        owner: "{{ keycloak.user }}"
+        group: "{{ keycloak.user }}"
+        extra_opts: "--strip-components=1"
+  # END OF BLOCK

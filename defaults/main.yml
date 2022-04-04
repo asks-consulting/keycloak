@@ -1,0 +1,19 @@
+---
+
+keycloak:
+  # version: "latest" to get the latest version, or use a specific version like "17.0.0"
+  version: "latest"
+  mirror: "https://github.com/{{ kc_github_slug }}/releases/download"
+  install_dir: "/opt/{{ kc_name }}"
+  user: "{{ kc_name }}"
+  bind_port: "8080"
+  bind_address: "0.0.0.0"
+  create_admin: true
+  admin_username: "admin"
+  admin_password: "{{ lookup('community.general.passwordstore', 'hosts/muscat/keycloak/admin') }}"
+  # postgresql database
+  database:
+    name: "{{ kc_name }}"
+    user: "{{ kc_name }}"
+    pwd: "{{ lookup('community.general.passwordstore', 'hosts/muscat/psql/users/keycloak') }}"
+    port: 5432

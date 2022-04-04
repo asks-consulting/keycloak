@@ -1,0 +1,12 @@
+---
+
+# https://github.com/keycloak/keycloak
+kc_github_slug: keycloak/keycloak
+kc_name: keycloak
+kc_filename: "{{ kc_name }}-{{ keycloak_version }}"
+
+# https://github.com/keycloak/keycloak/releases/download/17.0.1/keycloak-17.0.1.tar.gz
+kc_tgz_url: "{{ keycloak.mirror }}/{{ keycloak_version }}/{{ kc_filename }}.tar.gz"
+
+# used to check for existing installation
+kc_installed_canary: "{{ keycloak.install_dir }}/bin/kc.sh"

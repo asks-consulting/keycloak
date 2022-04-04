@@ -1,0 +1,42 @@
+---
+
+# set keycloak_version (this variable is meant to be overwritten 
+# if we enter the block below)
+- ansible.builtin.set_fact:
+    keycloak_version: "{{ keycloak.version }}"
+
+
+- name: Find version of the latest available Keycloak release
+  when: keycloak.version == "latest"
+  block:
+
+    - name: Query Github API for the latest Keycloak release
+      ansible.builtin.uri:
+        method: GET
+        status_code: 200
+        url: "https://api.github.com/repos/{{ kc_github_slug }}/releases/latest"
+      register: keycloak_uri
+
+    - name: Latest Keycloak version
+      ansible.builtin.set_fact:
+        keycloak_version: "{{ keycloak_uri.json.tag_name }}" # 17.0.1
+  # END OF BLOCK
+
+
+- name: "Check for existing install at {{ keycloak.install_dir }}"
+  ansible.builtin.stat:
+    path: "{{ kc_installed_canary }}"
+  changed_when: false
+  register: keycloak_binary
+
+- name: Find version of the installed Keycloak installation
+  when: keycloak_binary.stat.exists | bool
+  # Keycloak - Version 17.0.1
+  ansible.builtin.command: >
+    awk '{print $4}' {{ keycloak.install_dir }}/version.txt
+  register: keycloak_version_installed
+
+- name: Save version of installed Keycloak to variable
+  when: keycloak_binary.stat.exists | bool
+  ansible.builtin.set_fact:
+    kc_installed_version: "{{ keycloak_version_installed.stdout }}"

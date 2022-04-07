@@ -1,0 +1,6 @@
+---
+
+- name: delete admin credentials envfile
+  ansible.builtin.file:
+    path: "{{ keycloak.admin.envfile }}"
+    state: absent

@@ -1,0 +1,53 @@
+### Database
+
+# The database vendor
+db={{ keycloak.database.vendor }}
+
+# The username of the database user
+db-username={{ keycloak.database.user }}
+
+# The password of the database user
+db-password={{ keycloak.database.pwd }}
+
+# The full database JDBC URL. If not provided, a default URL is set based on the selected database vendor.
+{% if keycloak.database.vendor == "postgres" %}
+db-url=jdbc:postgresql://localhost:{{ keycloak.database.port }}/{{ keycloak.database.name }}
+{% endif %}
+
+
+### Observability
+
+# If the server should expose metrics and healthcheck endpoints.
+#metrics-enabled=true
+
+
+### HTTP
+{# These HTTP settings are geared towards running Keycloak behind a reverse
+proxy on a different host in the same LXC network #}
+{# https://github.com/keycloak/keycloak/discussions/10180#discussioncomment-2499722 #}
+
+# The file path to a server certificate or certificate chain in PEM format
+#https-certificate-file=${kc.home.dir}conf/server.crt.pem
+
+# The file path to a private key in PEM format
+#https-certificate-key-file=${kc.home.dir}conf/server.key.pem
+
+# Do not attach route to cookies and rely on the session affinity capabilities from reverse proxy
+#spi-sticky-session-encoder-infinispan-should-attach-route=false
+
+# Hostname for the Keycloak server
+hostname={{ keycloak.hostname }}
+
+# HTTP listener, default: false
+http-enabled=true
+
+# Listen IP, aka bind adress
+http-host={{ keycloak.bind_address }}
+
+# Listen port
+http-port={{ keycloak.bind_port }}
+
+# The proxy address forwarding mode if the server is behind a reverse proxy
+# Possible values are: edge, reencrypt, passthrough
+# https://github.com/keycloak/keycloak/issues/10723
+proxy=edge

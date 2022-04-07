@@ -1,0 +1,33 @@
+---
+
+# https://github.com/keycloak/keycloak/issues/10357
+# https://github.com/keycloak/keycloak/discussions/10180#discussioncomment-2499174
+
+- name: Create Keycloak systemd service
+  ansible.builtin.template:
+    src: keycloak.service.j2
+    dest: /etc/systemd/system/keycloak.service
+    owner: root
+    group: root
+    mode: u=rw,go=r
+
+- name: Configure envfile containing Keycloak admin user credentials
+  ansible.builtin.template:
+    src: admin.env.j2
+    dest: "{{ keycloak.admin.envfile }}"
+    owner: "{{ keycloak.user }}"
+    group: "{{ keycloak.user }}"
+    mode: u=rw
+  # this is an elegant solution - at the end of the play credentials are removed from disk
+  # (at which point admin user should have been created)
+  # note! I'm not sure whether it would be problematic to also restart keycloak
+  # in a notifier at this point (will that cause keycloak to forget the admin user credentials?)
+  notify: delete admin credentials envfile
+
+- name: Enable and start the Keycloak systemd service
+  ansible.builtin.systemd:
+    enabled: yes
+    state: restarted
+    name: keycloak.service
+    scope: system
+    daemon_reload: yes

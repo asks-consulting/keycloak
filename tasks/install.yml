@@ -1,5 +1,17 @@
 ---
 
+# still not fixing the issue
+# does keycloak require tomcat? I think not
+# or perhaps we should be using psql socket instead? How do we specify that?
+# PROBABLY NOT NECESSARY
+# - name: Install JDBC driver
+#   ansible.builtin.apt:
+#     name:
+#       - libpostgresql-jdbc-java
+#       - libh2-java
+#     state: present
+
+
 # install if not already installed, or if installed version is older
 # than the downloaded version
 - name: "Install Keycloak v{{ keycloak_version }}"

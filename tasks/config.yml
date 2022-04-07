@@ -1,0 +1,59 @@
+---
+
+# unpacked archive should contain barebones keycloak.conf at conf/keycloak.conf
+# we have crafted our own conf in this role, so let's replace it
+- name: Create keycloak.conf
+  ansible.builtin.template:
+    src: keycloak.conf.j2
+    dest: "{{ keycloak.install_dir }}/conf/keycloak.conf"
+    owner: "{{ keycloak.user }}"
+    group: "{{ keycloak.user }}"
+    mode: u=rw
+
+# create database and database user
+- name: "Create pgsql database user {{ keycloak.database.user }}"
+  community.postgresql.postgresql_user:
+    name: "{{ keycloak.database.user }}"
+    password: "{{ keycloak.database.pwd }}"
+    # https://dba.stackexchange.com/a/263911
+    role_attr_flags: CREATEDB,CREATEROLE,INHERIT,NOSUPERUSER,LOGIN
+    encrypted: yes
+    state: present
+    expires: infinity
+    port: "{{ keycloak.database.port | int }}"
+  become: true
+  become_user: "{{ db_admin_username }}"
+
+# check which pgsql databases exist
+- name: Collect info on all existing pgsql databases
+  community.postgresql.postgresql_info:
+    filter:
+      - "databases"
+  become: true
+  become_user: "{{ db_admin_username }}"
+  register: keycloak_pgsql_info
+
+- name: "Create database {{ keycloak.database.name }} if it doesn't exist"
+  community.postgresql.postgresql_db:
+    name: "{{ keycloak.database.name }}"
+    encoding: UTF-8
+    state: present
+    owner: "{{ keycloak.database.user }}"
+    port: "{{ keycloak.database.port | int }}"
+  become: true
+  become_user: "{{ db_admin_username }}"
+  when: "keycloak.database.name not in keycloak_pgsql_info.databases"
+  register: keycloak_pgsql_database
+
+- name: "Grant pgsql user {{ keycloak.database.user }} ALL privileges on database {{ keycloak.database.name }}"
+  community.postgresql.postgresql_user:
+    db: "{{ keycloak.database.name }}"
+    priv: ALL
+    name: "{{ keycloak.database.user }}"
+    password: "{{ keycloak.database.pwd }}"
+    encrypted: yes
+    state: present
+    expires: infinity
+    port: "{{ keycloak.database.port | int }}"
+  become: true
+  become_user: "{{ db_admin_username }}"

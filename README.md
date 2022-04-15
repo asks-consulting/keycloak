@@ -115,7 +115,37 @@ Well, seems like there is two filenames with both `jdbc` and `postgresql` in `li
 so the PostgreSQL drivers are clearly in place.
 
 
+## Setting up Keycloak server
 
+The master realm should only be used by the admin to create other realms.
+https://www.keycloak.org/docs/latest/server_admin/
+
+So we should look into how to create realms with Ansible (it might or might not
+be worth ansiblifying this step).
+
+How to configure Apache with OIDC with Keycloak (like what I've with auth0)?
+
++ https://www.keycloak.org/docs/latest/securing_apps/index.html#_mod_auth_openidc
++ https://www.janua.fr/using-apache2-mod_auth_openidc-module-with-keycloak-openid-connect/
++ https://wjw465150.gitbooks.io/keycloak-documentation/content/securing_apps/topics/oidc/mod-auth-openidc.html
++ https://stackoverflow.com/questions/64949839/keycloak-apache-mod-auth-openidc-elasticsearch-opendistro
+
+
+### Protecting our first application (using Apache `mod_auth_openidc`)
+
+I have created a new realm, and created its first user.
+
+> The `mod_auth_openidc` module functions as an OpenID Connect Relying Party (RP)
+> and enables authentication against an OpenID Connect Provider
+> [in our case Keycloak].
+
+I think I have managed to put my first webservice behind a Keycloak client.
+All of the Apache vhost config was done in the `luxor` playbook.
+
++ https://github.com/zmartzone/mod_auth_openidc
++ https://www.keycloak.org/docs/latest/securing_apps/
++ https://www.appsdeveloperblog.com/keycloak-client-credentials-grant-example/
++ https://curity.io/resources/learn/apache-mod-auth-openidc/
 
 
 ## Refs

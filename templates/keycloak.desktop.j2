@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Keycloak
+Type=Application
+Exec=/usr/bin/chromium-browser --new-window --app="https://{{ hostinfo.muscat.keycloak }}"
+GenericName={{ hostinfo.muscat.keycloak }}
+Comment=
+Categories=Network;WebDevelopment;
+Keywords=keycloak;webapp;authentication;oauth;
+StartupWMClass=chromium-app-keycloak
+Icon={{ desktop_icon.dest }}
+Version=1.1
+{# empty MimeType line just to suppress "lacks Mimetype" warning during update-desktop-database #}
+MimeType=

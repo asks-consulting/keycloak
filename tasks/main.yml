@@ -1,13 +1,24 @@
 ---
 
-- ansible.builtin.import_tasks: version-check.yml
-  tags: updates-only
 
-- ansible.builtin.import_tasks: user.yml
+- name: Setup Keycloak
+  when: "'workstation' not in group_names"
+  block:
 
-- ansible.builtin.import_tasks: install.yml
-  tags: updates-only
+    - ansible.builtin.import_tasks: version-check.yml
+      tags: updates-only
+    
+    - ansible.builtin.import_tasks: user.yml
+    
+    - ansible.builtin.import_tasks: install.yml
+      tags: updates-only
+    
+    - ansible.builtin.import_tasks: config.yml
+    
+    - ansible.builtin.import_tasks: systemd.yml
+  # END OF BLOCK
 
-- ansible.builtin.import_tasks: config.yml
 
-- ansible.builtin.import_tasks: systemd.yml
+- ansible.builtin.import_tasks: desktop-entry.yml
+  when: "'workstation' in group_names"
+  tags: desktop-entry

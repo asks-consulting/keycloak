@@ -2,6 +2,12 @@
 
 dependencies:
   # https://codeberg.org/ansible/postgres
-  - { role: postgres, become: true, tags: postgres }
+  - role: postgres
+    become: true
+    tags: postgres
+    when: "'workstation' not in group_names"
   # https://codeberg.org/ansible/java-openjdk
-  - { role: java-openjdk, become: true, tags: java-openjdk }
+  - role: java-openjdk
+    become: true
+    tags: java-openjdk
+    when: "'workstation' not in group_names"

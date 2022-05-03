@@ -148,6 +148,21 @@ All of the Apache vhost config was done in the `luxor` playbook.
 + https://curity.io/resources/learn/apache-mod-auth-openidc/
 
 
+### Increasing session lifetime (testing)
+
+The default settings are not bad, but I want to make it easier for my users
+to pick up where they left off without having to logout/login again.
+
+![default settings for my realm](files/realm-settings-tokens_default.jpg)
+
+I have increased `SSO Session Idle` sharply and `SSO Session Max` slightly:
+![new settings for solarchemist realm](files/realm-settings-tokens_longer.jpg)
+
++ https://stackoverflow.com/a/67624190
++ https://github.com/keycloak/keycloak-documentation/blob/main/server_admin/topics/sessions/timeouts.adoc
+
+
+
 ## Refs
 
 + https://www.keycloak.org/guides

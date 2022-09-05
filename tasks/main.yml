@@ -5,16 +5,19 @@
   when: "'workstation' not in group_names"
   block:
 
+    - ansible.builtin.import_tasks: load-defaults.yml
+      tags: updates-only
+
     - ansible.builtin.import_tasks: version-check.yml
       tags: updates-only
-    
+
     - ansible.builtin.import_tasks: user.yml
-    
+
     - ansible.builtin.import_tasks: install.yml
       tags: updates-only
-    
+
     - ansible.builtin.import_tasks: config.yml
-    
+
     - ansible.builtin.import_tasks: systemd.yml
   # END OF BLOCK
 

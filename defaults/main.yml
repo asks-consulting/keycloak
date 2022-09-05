@@ -1,7 +1,6 @@
 ---
 
-keycloak:
-  # "latest" to get the latest version, or use a specific version like "17.0.0"
+keycloak_default:
   version: "latest"
   mirror: "https://github.com/{{ kc_github_slug }}/releases/download"
   install_dir: "/opt/{{ kc_name }}"

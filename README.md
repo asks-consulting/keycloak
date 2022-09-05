@@ -162,19 +162,67 @@ I have increased `SSO Session Idle` sharply and `SSO Session Max` slightly:
 + https://github.com/keycloak/keycloak-documentation/blob/main/server_admin/topics/sessions/timeouts.adoc
 
 
+### Restrict user authorisation on certain clients
+
+For example, in a single realm we usually have multiple clients, and multiple users,
+but only certain users should be allowed access to all clients.
+
+~~It does not appear that Keycloak allows this kind of configuration out of the box.~~
+
+In the client settings, enable `Authorization Enabled`:
+![authorisation enabled](files/client-settings-auth_enabled.jpg)
+
+This causes the `Authorization` menu item to become visible (it wasn't before).
+![authorisation menu](files/client-settings-auth_menu.jpg)
+
+Let's try setting a [user-based policy](https://www.keycloak.org/docs/latest/authorization_services/#_policy_user).
+
+![create authorisation policy for type user](files/client-settings-auth_policies_user.jpg)
+
+![add user policy](files/client-settings-add_user_policy.jpg)
+
+At this point, the client can still be accessed by all users - it seems creating
+a user policy is not enough by itself.
+
+![create resource based permission](files/client-settings-auth_permissions.jpg)
+
+![add resource permission](files/client-settings-add_resource_permission.jpg)
+
+https://github.com/zmartzone/mod_auth_openidc/wiki/Keycloak#roles
+
+No, this is not working. I have not been able to get the VSCode client to
+deny authorisation for any user, whether included in the list of authorised
+users or not (i.e., all users in the realm can still access the app).
+Either Keycloak 17 does not support this stuff out of the box, or (more likely)
+I have misconfigured Keycloak or else lack some OIDC field in the Apache vhost
+config.
+
+No useful tips on the web, so I'm pausing this project here. To be resumed
+at some later point.
+
++ https://github.com/sventorben/keycloak-restrict-client-auth
+
+
 
 ## Refs
 
 + https://www.keycloak.org/guides
 + https://www.keycloak.org/server/all-config
-+ https://www.soundsessential.com/blog/215-keycloak-17-filemaker-installation-configuration-tutorial-part-4-starting-keycloak-17-next-steps
-+ https://github.com/keycloak/keycloak/discussions/10180
-+ http://www.mastertheboss.com/keycloak/getting-started-with-keycloak-powered-by-quarkus/
-+ https://www.keycloak.org/docs/latest/release_notes/
-+ https://jdbc.postgresql.org/documentation/head/connect.html
++ https://www.keycloak.org/docs/latest/authorization_services
++ https://github.com/thomasdarimont/awesome-keycloak
+
++ https://www.keycloak.org/docs/latest/release_notes
++ https://www.keycloak.org/2022/04/keycloak-1800-released.html
+
++ [systemd graceful shutdown](https://github.com/keycloak/keycloak/discussions/10180)
++ [Getting started with Keycloak powered by Quarkus](http://www.mastertheboss.com/keycloak/getting-started-with-keycloak-powered-by-quarkus)
++ [Starting Keycloak 17](https://www.soundsessential.com/blog/215-keycloak-17-filemaker-installation-configuration-tutorial-part-4-starting-keycloak-17-next-steps)
++ [Keycloak basic configuration for authentication and authorization](https://www.thomasvitale.com/keycloak-configuration-authentication-authorisation/)
++ [PostgreSQL JDBC driver: connecting to the database](https://jdbc.postgresql.org/documentation/head/connect.html)
 
 
 ### Ansible roles
+
 + https://github.com/ansible-middleware/keycloak
 + https://github.com/andrewrothstein/ansible-keycloak
 + https://github.com/andrelohmann/ansible-role-keycloak
@@ -182,6 +230,7 @@ I have increased `SSO Session Idle` sharply and `SSO Session Max` slightly:
 
 
 ### Ansible plugins
+
 + [community.general.keycloak_realm](https://docs.ansible.com/ansible/latest/collections/community/general/keycloak_realm_module.html)
 + [community.general.keycloak_role](https://docs.ansible.com/ansible/latest/collections/community/general/keycloak_role_module.html)
 + [community.general.keycloak_client](https://docs.ansible.com/ansible/latest/collections/community/general/keycloak_client_module.html)

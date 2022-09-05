@@ -1,0 +1,18 @@
+---
+
+# This approach was directly inspired by role load_defaults (see roles/loc/)
+
+# Merge *_default.* variable with any user-specified child values
+# For example, group_vars might specify keycloak.version: "17.0.1"
+# which should be merged such that non-default values take precedence
+- name: Combine default and user-defined settings
+  ansible.builtin.set_fact:
+    keycloak: '{{ keycloak_default | combine(keycloak, recursive=True) }}'
+  run_once: true
+  when: keycloak is defined
+
+- name: Use default keycloak settings
+  ansible.builtin.set_fact:
+    keycloak: '{{ keycloak_default }}'
+  run_once: true
+  when: keycloak is not defined

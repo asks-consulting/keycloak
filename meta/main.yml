@@ -5,9 +5,9 @@ dependencies:
   - role: postgres
     become: true
     tags: postgres
-    when: "'workstation' not in group_names"
+    when: group_names is not search("workstation")
   # https://codeberg.org/ansible/java-openjdk
   - role: java-openjdk
     become: true
     tags: java-openjdk
-    when: "'workstation' not in group_names"
+    when: group_names is not search("workstation")

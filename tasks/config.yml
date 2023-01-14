@@ -11,7 +11,7 @@
     mode: u=rw
 
 # create database and database user
-- name: "Create pgsql database user {{ keycloak.database.user }}"
+- name: "Create pgsql user {{ keycloak.database.user }}"
   community.postgresql.postgresql_user:
     name: "{{ keycloak.database.user }}"
     password: "{{ keycloak.database.pwd }}"
@@ -57,3 +57,15 @@
     port: "{{ keycloak.database.port | int }}"
   become: true
   become_user: "{{ db_admin_username }}"
+
+# handle the required "kc.sh build" step to rebuild config
+# this task should run if fresh install or upgrade
+- name: Re-build persistent configuration
+  ansible.builtin.command: >
+    {{ keycloak.install_dir }}/bin/kc.sh build --db={{ keycloak.database.vendor }}
+  become: true
+  become_user: "{{ keycloak.user }}"
+  when: >
+    kc_installed_version is not defined or
+    kc_installed_version == "" or
+    kc_installed_version is version(keycloak_version, '<>')

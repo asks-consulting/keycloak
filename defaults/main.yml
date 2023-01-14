@@ -7,7 +7,9 @@ keycloak_default:
   user: "{{ kc_name }}"
   # hostname: keycloak.example.com
   hostname: "{{ proxybox.keycloak.hostname }}"
+  # bind_port: 8080
   bind_port: "{{ proxybox.keycloak.port }}"
+  # bind_address: 0.0.0.0
   bind_address: "{{ proxybox.keycloak.interface }}"
   # initial admin user
   admin:

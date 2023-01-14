@@ -4,49 +4,39 @@ After=syslog.target {% if keycloak.database.vendor == "postgres" %}postgresql.se
 Wants=network-online.target systemd-networkd-wait-online.service
 
 [Service]
+Type=simple
 User={{ keycloak.user }}
 Group={{ keycloak.user }}
-{# 
-the prefix "-" indicates that if the file does not exist, it will not be read
+
+{# the prefix "-" indicates that if the file does not exist, it will not be read
 and no error or warning message is logged. This suits our purposes perfectly.
-https://unix.stackexchange.com/questions/404199/documentation-of-equals-minus-in-systemd-unit-files
-https://stackoverflow.com/questions/57736702/what-does-hyphen-before-slash-in-systemctl-service-file
-https://serverfault.com/questions/413397/how-to-set-environment-variable-in-systemd-service
++ https://unix.stackexchange.com/questions/404199/documentation-of-equals-minus-in-systemd-unit-files
++ https://stackoverflow.com/questions/57736702/what-does-hyphen-before-slash-in-systemctl-service-file
++ https://serverfault.com/questions/413397/how-to-set-environment-variable-in-systemd-service
 We set the credentials of the initial admin account in this envfile, which we
 create at the start of this role and then delete at the end of it, thus letting
 the Keycloak service start with the credentials available, while avoiding
-permanently storing the credentials on disk 
-#}
+permanently storing the credentials on disk #}
 EnvironmentFile=-{{ keycloak.admin.envfile }}
-{# https://www.keycloak.org/server/configuration#_using_the_auto_build_option_when_starting_the_server #}
-ExecStart={{ keycloak.install_dir }}/bin/kc.sh start --auto-build
+ExecStart={{ keycloak.install_dir }}/bin/kc.sh start --optimized
 ExecStop={{ keycloak.install_dir }}/bin/kc.sh stop
 WorkingDirectory={{ keycloak.install_dir }}
-{# 
-The following ReadWritePaths line causes systemd job to fail to start (using either JRE v11 or v17):
-apr 07 01:21:04 muscat systemd[15159]: keycloak.service: Failed to set up mount namespacing: /run/systemd/unit-root/opt/keycloak/data: No such file or directory
-apr 07 01:21:04 muscat systemd[15159]: keycloak.service: Failed at step NAMESPACE spawning /opt/keycloak/bin/kc.sh: No such file or directory
-apr 07 01:21:04 muscat systemd[1]: keycloak.service: Main process exited, code=exited, status=226/NAMESPACE
-apr 07 01:21:04 muscat systemd[1]: keycloak.service: Failed with result 'exit-code'.
-ReadWritePaths={{ keycloak.install_dir }}/conf {{ keycloak.install_dir }}/data {{ keycloak.install_dir }}/lib/quarkus
-# https://github.com/keycloak/keycloak/discussions/10180#discussioncomment-2499174
-#}
-SuccessExitStatus=0 143
-TimeoutStartSec=30
-TimeoutStopSec=30
 
-# Hardening options
-CapabilityBoundingSet=
-AmbientCapabilities=
-NoNewPrivileges=true
-ProtectHome=true
-ProtectSystem=strict
-ProtectKernelTunables=true
-ProtectKernelModules=true
-ProtectControlGroups=true
-PrivateTmp=true
-PrivateDevices=true
-LockPersonality=true
+{# https://github.com/keycloak/keycloak/issues/10357#issuecomment-1257289831 #}
+Restart=on-failure
+RestartSec=2s
+# Disable timeout logic and wait until process is stopped
+TimeoutStopSec=0
+# SIGTERM signal is used to stop the Java process
+KillSignal=SIGTERM
+# Send the signal only to the JVM rather than its control group
+KillMode=process
+# Java process is never killed
+SendSIGKILL=no
+# When a JVM receives a SIGTERM signal it exits with code 143
+SuccessExitStatus=0 143
+LimitMEMLOCK=infinity
+LimitNOFILE=65535
 
 [Install]
 WantedBy=multi-user.target

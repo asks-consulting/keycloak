@@ -1,4 +1,4 @@
-# keycloak
+# Keycloak
 
 This Ansible role installs [Keycloak](https://github.com/keycloak/keycloak)
 (v17+, Quarkus) on an Ubuntu 20.04 LXC container,
@@ -11,7 +11,7 @@ on a different host in the same network.
 It has become time to replace `auth0.com` backed by Google Apps with
 something else. Reasons `auth0` is no longer viable:
 
-+ auth0.com no longer offers the free plan I originally signed up for, and 
++ auth0.com no longer offers the free plan I originally signed up for, and
   although it still works it no longer allows adding new users
 + auth0.com authentication having an annoyingly short lifetime, causing
   incessant logouts and sometimes loss of data in forms and such
@@ -46,7 +46,7 @@ something else. Reasons `auth0` is no longer viable:
    SSLCertificateKeyFile   /etc/letsencrypt/live/keycloak.example.com/privkey.pem
    SSLCertificateFile      /etc/letsencrypt/live/keycloak.example.com/cert.pem
    SSLCertificateChainFile /etc/letsencrypt/live/keycloak.example.com/chain.pem
-	
+
    ErrorLog ${APACHE_LOG_DIR}/keycloak.example.com_error.log
    CustomLog ${APACHE_LOG_DIR}/keycloak.example.com_access.log combined
 </VirtualHost>
@@ -66,12 +66,12 @@ java_version: '17'
 
 ## Notes
 
-The container runs a fresh Ubuntu Focal image, along with 
+The container runs a fresh Ubuntu Focal image, along with
 
 https://www.keycloak.org/migration/migrating-to-quarkus#_setup_of_initial_users
-> To add the initial admin user, set the environment variables `KEYCLOAK_ADMIN` 
-> and `KEYCLOAK_ADMIN_PASSWORD` for the username and password of the user. 
-> Keycloak uses them at the first startup to create an initial user with 
+> To add the initial admin user, set the environment variables `KEYCLOAK_ADMIN`
+> and `KEYCLOAK_ADMIN_PASSWORD` for the username and password of the user.
+> Keycloak uses them at the first startup to create an initial user with
 > administration rights.
 
 [Here is an example Ansible task using the deprecated `add-user-keycloak.sh`
@@ -83,7 +83,7 @@ itself. Furthermore, I want to install Keycloak on its own LXC container
 configured as far as possible for production, but without going so far as to
 run multiple Keycloak instances with a shared database backend.
 
-> Everytime that configuration gets changed, you need to execute 
+> Everytime that configuration gets changed, you need to execute
 > `bin/kc.sh build` to rebuild the server configuration
 
 
@@ -204,6 +204,19 @@ at some later point.
 
 
 
+## Known issues
+
+### `username exists` message in log
+
+```
+muscat kc.sh[3315]: ERROR [org.keycloak.services] (main) KC-SERVICES0010: Failed to add user 'admin' to realm 'master': user with username exists
+```
+
+Even though it says `error`, it does not seem to affect our ability to login or anything.
+I assume this is due to how the superadmin username/password is set and ignore
+this. Note that this error has been observed on both Keycloak v17 and v20.
+
+
 ## Refs
 
 + https://www.keycloak.org/guides
@@ -212,7 +225,7 @@ at some later point.
 + https://github.com/thomasdarimont/awesome-keycloak
 
 + https://www.keycloak.org/docs/latest/release_notes
-+ https://www.keycloak.org/2022/04/keycloak-1800-released.html
++ https://www.keycloak.org/2022/03/releases
 
 + [systemd graceful shutdown](https://github.com/keycloak/keycloak/discussions/10180)
 + [Getting started with Keycloak powered by Quarkus](http://www.mastertheboss.com/keycloak/getting-started-with-keycloak-powered-by-quarkus)

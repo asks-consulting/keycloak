@@ -1,6 +1,6 @@
 ---
 
-# set keycloak_version (this variable is meant to be overwritten 
+# set keycloak_version (this variable is meant to be overwritten
 # if we enter the block below)
 - ansible.builtin.set_fact:
     keycloak_version: "{{ keycloak.version }}"

@@ -1,7 +1,7 @@
 # Apache config
 
 This Apache virtualhost config seems to work.
-Apache 2.4.29 on Ubuntu Bionic; 
+Apache 2.4.29 on Ubuntu Bionic;
 Keycloak 17.0.1 (Quarkus) with Java 17 on an Ubuntu Focal container.
 
 The web service runs on its own container in the same VLAN

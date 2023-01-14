@@ -24,7 +24,7 @@
   # in a notifier at this point (will that cause keycloak to forget the admin user credentials?)
   notify: delete admin credentials envfile
 
-- name: Enable and start the Keycloak systemd service
+- name: Enable and (re)start the Keycloak systemd service
   ansible.builtin.systemd:
     enabled: yes
     state: restarted
